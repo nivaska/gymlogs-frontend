@@ -6,7 +6,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import "../App.css";
 import PrivateRoute from "./PrivateRoute";
 import Home from "./Home";
-import Login from "./Login";
+import Login from "./Login/Login";
 import appTheme from "../utils/appTheme";
 
 class App extends Component {
