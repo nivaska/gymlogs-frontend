@@ -11,11 +11,15 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 
+import { registerUser } from "../../services/authService";
+import { LoadingThreadmill } from "../Loading";
+
 const styles = {
   formRoot: {
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
+    transition: "transform 0.6s ease-in-out",
   },
   textField: {
     margin: "15px",
@@ -28,6 +32,12 @@ const styles = {
   links: {
     margin: "0 5px",
   },
+  successText: {
+    color: "#33cc33",
+  },
+  failureText: {
+    color: "#FF5050",
+  },
 };
 
 class SignUp extends Component {
@@ -36,6 +46,9 @@ class SignUp extends Component {
     email: "",
     password: "",
     showPassword: false,
+    waitingForResponse: false,
+    formMessage: "",
+    formMessageState: "",
   };
 
   handleChange = (prop) => (event) => {
@@ -50,6 +63,32 @@ class SignUp extends Component {
     event.preventDefault();
   };
 
+  handleRegisterUser = async (e) => {
+    e.preventDefault();
+    this.setState({ formMessage: "", waitingForResponse: true });
+    var result = await registerUser(
+      this.state.name,
+      this.state.email,
+      this.state.password
+    );
+
+    if (result.success)
+      this.setState({
+        name: "",
+        email: "",
+        password: "",
+        formMessage: "Account created successfully",
+        formMessageState: "successText",
+        waitingForResponse: false,
+      });
+    else
+      this.setState({
+        formMessage: result.message,
+        formMessageState: "failureText",
+        waitingForResponse: false,
+      });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -58,16 +97,26 @@ class SignUp extends Component {
         className={classes.formRoot}
         noValidate
         autoComplete="off"
-        onSubmit={() => {
-          "on submit signup form";
+        onSubmit={(e) => {
+          this.handleRegisterUser(e);
         }}
       >
+        <LoadingThreadmill visible={this.state.waitingForResponse} />
+
+        {this.state.formMessage ? (
+          <Typography
+            variant="body2"
+            className={classes[this.state.formMessageState]}
+          >
+            {this.state.formMessage}
+          </Typography>
+        ) : null}
         <FormControl className={classes.textField}>
           <InputLabel htmlFor="inputName">Name</InputLabel>
           <Input
             id="inputName"
             type={"text"}
-            value={this.state.email}
+            value={this.state.name}
             onChange={this.handleChange("name")}
           />
         </FormControl>
@@ -105,8 +154,9 @@ class SignUp extends Component {
           color="primary"
           className={classes.button}
           size="medium"
-          onClick={() => {
-            "sinup click";
+          disabled={this.state.waitingForResponse}
+          onClick={(e) => {
+            this.handleRegisterUser(e);
           }}
         >
           Sign Up

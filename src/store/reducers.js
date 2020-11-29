@@ -3,10 +3,10 @@ import * as actionTypes from "./actionTypes";
 
 const userDataReducer = (userData = null, action) => {
   switch (action.type) {
-    case actionTypes.USER_LOGGED_IN:
+    case "SET_USER_DATA":
       return action.payload;
-    case actionTypes.USER_LOGGED_OUT:
-      return {};
+    case "AUTH_STATE":
+      if (!action.payload) return {};
     default:
       return userData;
   }
@@ -14,10 +14,8 @@ const userDataReducer = (userData = null, action) => {
 
 const authCheckReducer = (isAuthenticated = false, action) => {
   switch (action.type) {
-    case actionTypes.USER_LOGGED_IN:
-      return true;
-    case actionTypes.USER_LOGGED_OUT:
-      return false;
+    case "AUTH_STATE":
+      return action.payload;
     default:
       return isAuthenticated;
   }

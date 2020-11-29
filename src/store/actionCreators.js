@@ -1,6 +1,20 @@
 import axiosInstance from "../utils/axiosInstance";
 import * as actionTypes from "./actionTypes";
 
+export const setAuthState = (authState) => {
+  return {
+    type: "AUTH_STATE",
+    payload: authState,
+  };
+};
+
+export const setUserData = (userData) => {
+  return {
+    type: "SET_USER_DATA",
+    payload: userData,
+  };
+};
+
 export const loginUser = (userEmail, userPwd) => {
   return async (dispatch) => {
     axiosInstance
