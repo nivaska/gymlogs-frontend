@@ -7,16 +7,15 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import Icon from "@material-ui/core/Icon";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
 
-import GoogleIcon from "../../assets/google-icon.svg";
+import GoogleSignin from "./GoogleSignin";
 import Config from "../../utils/config";
 import { LoadingThreadmill } from "../Loading";
-import { loginWithGoogle, loginUser } from "../../services/authService";
+import { loginUser } from "../../services/authService";
 import { setAuthState } from "../../store/actionCreators";
 
 const styles = {
@@ -32,9 +31,6 @@ const styles = {
   button: {
     width: "250px",
     margin: "20px",
-  },
-  googleIcon: {
-    backgroundImage: `url(${GoogleIcon})`,
   },
   links: {
     margin: "0 5px",
@@ -76,15 +72,14 @@ class SignIn extends Component {
     event.preventDefault();
   };
 
-  handleLoginInWithGoogle = async () => {
-    await loginWithGoogle();
-  };
-
-  handleLoginUser = async (e) => {
+  handleLoginSubmit = async (e) => {
     e.preventDefault();
     this.setState({ formMessage: "", waitingForResponse: true });
     var result = await loginUser(this.state.email, this.state.password);
+    this.setLoginResult(result);
+  };
 
+  setLoginResult = (result) => {
     if (result.success) {
       this.setState({
         email: "",
@@ -105,17 +100,13 @@ class SignIn extends Component {
   render() {
     const { classes } = this.props;
 
-    const googleIcon = (
-      <Icon size="small" className={classes.googleIcon}></Icon>
-    );
-
     return (
       <form
         className={classes.formRoot}
         noValidate
         autoComplete="off"
         onSubmit={(e) => {
-          this.handleLoginUser(e);
+          this.handleLoginSubmit(e);
         }}
       >
         <LoadingThreadmill visible={this.state.waitingForResponse} />
@@ -127,19 +118,7 @@ class SignIn extends Component {
             {this.state.formMessage}
           </Typography>
         ) : null}
-        <Button
-          variant="outlined"
-          color="primary"
-          className={classes.button}
-          startIcon={googleIcon}
-          size="medium"
-          disabled={this.state.waitingForResponse}
-          onClick={() => {
-            this.handleLoginInWithGoogle();
-          }}
-        >
-          Login with Google
-        </Button>
+        <GoogleSignin Disabled={this.state.waitingForResponse} SetResult={this.setLoginResult}/>
 
         <div className={classes.divider}>
           <span className={classes.dividerLine}></span>
@@ -183,7 +162,7 @@ class SignIn extends Component {
           size="medium"
           disabled={this.state.waitingForResponse}
           onClick={(e) => {
-            this.handleLoginUser(e);
+            this.handleLoginSubmit(e);
           }}
         >
           Log In

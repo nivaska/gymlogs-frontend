@@ -37,11 +37,11 @@ export const loginUser = async (email, password) => {
   return apiResult;
 };
 
-export const loginWithGoogle = async () => {
+export const loginWithGoogle = async (tokenId) => {
   const apiResult = { success: false, message: "" };
 
   await axiosInstance
-    .get("auth/google")
+    .post("auth/google", {id_token:tokenId})
     .then((response) => {
       apiResult.success = true;
     })
